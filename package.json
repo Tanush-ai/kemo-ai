@@ -1,16 +1,16 @@
 {
-  "name": "orb-ui",
+  "name": "kemo-ai",
   "version": "0.9.0",
   "description": "React voice agent UI components with audio-reactive adapters for Vapi, ElevenLabs, LiveKit, Pipecat, OpenAI Live, OpenAI Realtime, Gemini Live, and custom voice AI apps.",
   "type": "module",
-  "main": "./dist/orb-ui.cjs",
-  "module": "./dist/orb-ui.js",
+  "main": "./dist/kemo-ai.cjs",
+  "module": "./dist/kemo-ai.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/orb-ui.js",
-      "require": "./dist/orb-ui.cjs"
+      "import": "./dist/kemo-ai.js",
+      "require": "./dist/kemo-ai.cjs"
     },
     "./adapters": {
       "types": "./dist/adapters/index.d.ts",
@@ -28,16 +28,16 @@
   ],
   "scripts": {
     "build": "tsc && vite build",
-    "build:demo": "pnpm --filter orb-ui-demo build",
+    "build:demo": "pnpm --filter kemo-ai-demo build",
     "changeset": "changeset",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm typecheck:examples && pnpm test && pnpm build && pnpm typecheck:package && pnpm typecheck:demo && pnpm build:demo && pnpm test:e2e:built",
     "dev": "vite build --watch",
-    "dev:demo": "pnpm --filter orb-ui-demo dev",
+    "dev:demo": "pnpm --filter kemo-ai-demo dev",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "generate:og": "node scripts/generate-og-image.mjs",
     "typecheck": "tsc --noEmit",
-    "typecheck:demo": "pnpm --filter orb-ui-demo typecheck",
+    "typecheck:demo": "pnpm --filter kemo-ai-demo typecheck",
     "typecheck:examples": "tsc -p tsconfig.type-tests.json --noEmit",
     "typecheck:package": "tsc -p tsconfig.package-types.json --noEmit",
     "lint": "eslint .",
@@ -107,10 +107,10 @@
   ],
   "license": "MIT",
   "author": "Alexander Chen",
-  "homepage": "https://orb-ui.com",
+  "homepage": "https://github.com/Tanush-ai/kemo-ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/exprmntl/orb-ui.git"
+    "url": "https://github.com/Tanush-ai/kemo-ai.git"
   },
   "packageManager": "pnpm@10.33.1",
   "typesVersions": {

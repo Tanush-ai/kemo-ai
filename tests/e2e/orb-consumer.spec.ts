@@ -15,7 +15,7 @@ test('loads the built package and public adapter exports', async ({ page }) => {
 
   await page.goto('/')
 
-  await expect(page.getByRole('heading', { name: 'orb-ui browser consumer' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'kemo-ai browser consumer' })).toBeVisible()
   await expect(page.getByTestId('adapter-exports')).toHaveText('ready')
   await expect(page.getByTestId('controlled-orb')).toBeVisible()
   await expect(page.getByTestId('radial-orb')).toBeVisible()

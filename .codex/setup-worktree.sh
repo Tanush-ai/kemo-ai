@@ -5,7 +5,7 @@ WORKTREE_PATH="${CODEX_WORKTREE_PATH:-$PWD}"
 SOURCE_TREE_PATH="${CODEX_SOURCE_TREE_PATH:-}"
 REMOTE="${CODEX_REMOTE:-origin}"
 MAIN_BRANCH="${CODEX_MAIN_BRANCH:-main}"
-DIAGNOSTIC_LOG="/tmp/orb-ui-codex-setup.log"
+DIAGNOSTIC_LOG="/tmp/kemo-ai-codex-setup.log"
 
 log() {
   printf '%s\n' "$*" >> "$DIAGNOSTIC_LOG"

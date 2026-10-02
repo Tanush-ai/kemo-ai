@@ -57,7 +57,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        'orb-ui': resolve(__dirname, 'src/index.ts'),
+        'kemo-ai': resolve(__dirname, 'src/index.ts'),
         adapters: resolve(__dirname, 'src/adapters/index.ts'),
         'livekit-adapter': resolve(__dirname, 'src/adapters/livekit/browser.ts'),
       },

@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Orb, OrbThemeProvider } from 'orb-ui'
-import type { OrbAdapter, OrbSignal, OrbState, OrbThemePreset } from 'orb-ui'
+import { Orb, OrbThemeProvider } from 'kemo-ai'
+import type { OrbAdapter, OrbSignal, OrbState, OrbThemePreset } from 'kemo-ai'
 import {
   createElevenLabsAdapter,
   createLiveKitAdapter,
   createOpenAILiveAdapter,
   createVapiAdapter,
-} from 'orb-ui/adapters'
-import { createLiveKitAdapter as createManagedLiveKitAdapter } from 'orb-ui/adapters/livekit'
+} from 'kemo-ai/adapters'
+import { createLiveKitAdapter as createManagedLiveKitAdapter } from 'kemo-ai/adapters/livekit'
 
 const IDLE_SIGNAL: OrbSignal = {
   state: 'idle',
@@ -59,7 +59,7 @@ function App() {
 
   return (
     <main>
-      <h1>orb-ui browser consumer</h1>
+      <h1>kemo-ai browser consumer</h1>
       <p data-testid="adapter-exports">{adapterExportsReady ? 'ready' : 'missing'}</p>
 
       <section aria-label="Adapter lifecycle">

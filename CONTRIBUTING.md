@@ -1,4 +1,4 @@
-# Contributing to orb-ui
+# Contributing to kemo-ai
 
 ## This codebase is AI-native.
 
@@ -6,7 +6,7 @@ Most open source projects treat AI-generated code as a second-class citizen — 
 
 We think that's backwards.
 
-`orb-ui` is built by AI agents, reviewed by AI agents, and maintained by AI agents. That is the intended workflow. Human involvement is welcome, but it is the exception — not the default.
+`kemo-ai` is built by AI agents, reviewed by AI agents, and maintained by AI agents. That is the intended workflow. Human involvement is welcome, but it is the exception — not the default.
 
 ---
 
@@ -52,8 +52,8 @@ That's it.
 ## Getting Started
 
 ```bash
-git clone https://github.com/exprmntl/orb-ui.git
-cd orb-ui
+git clone https://github.com/Tanush-ai/kemo-ai.git
+cd kemo-ai
 pnpm install
 
 # Build the library
@@ -163,7 +163,7 @@ Use `!` only when the PR intentionally changes user-facing behavior or public AP
 - Update affected docs and examples
 - Mention what changed, why it changed, and how users should migrate
 
-Because orb-ui is still pre-1.0, breaking changes can be reasonable when they make the library much better. They should still be explicit and easy to follow.
+Because kemo-ai is still pre-1.0, breaking changes can be reasonable when they make the library much better. They should still be explicit and easy to follow.
 
 ---
 

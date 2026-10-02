@@ -1,5 +1,5 @@
-import { Orb, OrbThemeProvider, defineOrbTheme } from 'orb-ui'
-import type { OrbThemeRenderer } from 'orb-ui'
+import { Orb, OrbThemeProvider, defineOrbTheme } from 'kemo-ai'
+import type { OrbThemeRenderer } from 'kemo-ai'
 import {
   createElevenLabsAdapter,
   createGeminiLiveAdapter,
@@ -7,9 +7,9 @@ import {
   createOpenAILiveAdapter,
   createOpenAIRealtimeAdapter,
   createPipecatAdapter,
-} from 'orb-ui/adapters'
-import { createLiveKitAdapter } from 'orb-ui/adapters/livekit'
-import type { LiveKitBrowserAdapterConfig } from 'orb-ui/adapters/livekit'
+} from 'kemo-ai/adapters'
+import { createLiveKitAdapter } from 'kemo-ai/adapters/livekit'
+import type { LiveKitBrowserAdapterConfig } from 'kemo-ai/adapters/livekit'
 import type {
   ElevenLabsConversationClass,
   GeminiLiveSession,
@@ -17,7 +17,7 @@ import type {
   OrbAdapter,
   OrbSignal,
   PipecatClientLike,
-} from 'orb-ui/adapters'
+} from 'kemo-ai/adapters'
 
 const Conversation: ElevenLabsConversationClass = {
   startSession: async () => ({

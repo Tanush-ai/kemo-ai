@@ -15,9 +15,9 @@ import {
 } from '../../src/adapters'
 import { createLiveKitAdapter } from '../../src/adapters/livekit/browser'
 import type { OrbAdapter, OrbSignal } from '../../src/adapters'
-// @ts-expect-error AdapterCallbacks was removed in orb-ui 0.5.
+// @ts-expect-error AdapterCallbacks was removed in kemo-ai 0.5.
 import type { AdapterCallbacks } from '../../src/adapters'
-// @ts-expect-error LegacyOrbAdapter was removed in orb-ui 0.5.
+// @ts-expect-error LegacyOrbAdapter was removed in kemo-ai 0.5.
 import type { LegacyOrbAdapter } from '../../src/adapters'
 
 const vapi = new Vapi('public-key')
@@ -150,7 +150,7 @@ createElevenLabsAdapter(Conversation, {
 
 createElevenLabsAdapter(Conversation, {
   agentId: 'agent-id',
-  // @ts-expect-error orb-ui needs a voice-capable ElevenLabs session.
+  // @ts-expect-error kemo-ai needs a voice-capable ElevenLabs session.
   textOnly: true,
 })
 

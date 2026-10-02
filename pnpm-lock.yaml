@@ -94,12 +94,12 @@ importers:
       '@vapi-ai/web':
         specifier: 2.7.0
         version: 2.7.0
+      kemo-ai:
+        specifier: workspace:*
+        version: link:..
       livekit-client:
         specifier: 2.20.0
         version: 2.20.0(@types/dom-mediacapture-record@1.0.22)
-      orb-ui:
-        specifier: workspace:*
-        version: link:..
     devDependencies:
       '@types/react':
         specifier: ^18.3.29

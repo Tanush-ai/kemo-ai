@@ -1,7 +1,7 @@
 import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Orb } from 'orb-ui'
-import type { OrbSignal, OrbState, OrbThemeName, OrbThemePreset } from 'orb-ui'
+import { Orb } from 'kemo-ai'
+import type { OrbSignal, OrbState, OrbThemeName, OrbThemePreset } from 'kemo-ai'
 import './voice-orb-preview.css'
 
 const themes: OrbThemeName[] = ['circle', 'cloud', 'radial', 'bars']

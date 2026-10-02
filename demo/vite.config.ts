@@ -10,7 +10,7 @@ function resolveInput(path: string) {
 
 function playgroundRoutePlugin(): Plugin {
   return {
-    name: 'orb-ui-playground-route',
+    name: 'kemo-ai-playground-route',
     configureServer(server) {
       server.middlewares.use((request, _response, next) => {
         const url = request.url ?? ''
@@ -49,9 +49,9 @@ export default defineConfig({
   server: {
     allowedHosts: true,
   },
-  // Never pre-bundle orb-ui — it's a local workspace link and we want changes
+  // Never pre-bundle kemo-ai — it's a local workspace link and we want changes
   // to dist/ to be picked up immediately after pnpm build without cache clears.
   optimizeDeps: {
-    exclude: ['orb-ui'],
+    exclude: ['kemo-ai'],
   },
 })

@@ -1,7 +1,7 @@
 import { StrictMode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import type { LiveCallbacks, LiveConnectConfig } from '@google/genai'
-import { Orb } from 'orb-ui'
+import { Orb } from 'kemo-ai'
 import type {
   OrbAdapter,
   OrbSignal,
@@ -10,7 +10,7 @@ import type {
   OrbThemeName,
   OrbThemePreset,
   OrbThemeRenderer,
-} from 'orb-ui'
+} from 'kemo-ai'
 import {
   createElevenLabsAdapter,
   createGeminiLiveAdapter,
@@ -21,7 +21,7 @@ import {
   createVapiAdapter,
   fitVolumeCalibration,
   PROVIDER_VOLUME_CALIBRATIONS,
-} from 'orb-ui/adapters'
+} from 'kemo-ai/adapters'
 import type {
   DirectionalVolumeCalibration,
   GeminiLiveSession,
@@ -29,7 +29,7 @@ import type {
   VolumeCalibrationCapture,
   VolumeCalibrationFit,
   VolumeSample,
-} from 'orb-ui/adapters'
+} from 'kemo-ai/adapters'
 import './provider-playground.css'
 
 type ProviderId =
@@ -118,7 +118,7 @@ const THEME_MODES: Array<{ id: ThemeMode; label: string }> = [
   { id: 'renderer', label: 'Custom renderer' },
 ]
 const STATES: OrbState[] = ['idle', 'connecting', 'listening', 'thinking', 'speaking', 'error']
-const DEFAULT_LIVEKIT_ROOM_PREFIX = 'orb-ui-playground'
+const DEFAULT_LIVEKIT_ROOM_PREFIX = 'kemo-ai-playground'
 const DEFAULT_OPENAI_MODEL = 'gpt-realtime-2.1'
 const DEFAULT_OPENAI_LIVE_MODEL = 'gpt-live-1'
 const DEFAULT_OPENAI_LIVE_BACKEND = 'gpt-5.6-terra'
@@ -131,8 +131,8 @@ const DEFAULT_INSTRUCTIONS =
   'You are a concise, friendly voice assistant helping test a realtime React UI.'
 
 const EMPTY_SIGNAL: OrbSignal = { state: 'idle', inputVolume: 0, outputVolume: 0 }
-const CONFIG_STORAGE_KEY = 'orb-ui:provider-playground-config'
-const CALIBRATION_STORAGE_KEY = 'orb-ui:provider-playground-volume-calibration-v2'
+const CONFIG_STORAGE_KEY = 'kemo-ai:provider-playground-config'
+const CALIBRATION_STORAGE_KEY = 'kemo-ai:provider-playground-volume-calibration-v2'
 const CALIBRATABLE_PROVIDERS: CalibratableProviderId[] = [
   'vapi',
   'elevenlabs',
@@ -722,7 +722,7 @@ function createLazyAdapter(factory: () => OrbAdapter | Promise<OrbAdapter>): Orb
       activeAdapterPromise = Promise.resolve(factory()).then(async (adapter) => {
         if (generation !== adapterGeneration) {
           await adapter.stop?.()
-          throw new Error('[orb-ui/demo] Provider adapter was disposed while loading.')
+          throw new Error('[kemo-ai/demo] Provider adapter was disposed while loading.')
         }
         activeAdapter = adapter
         unsubscribeActiveAdapter = adapter.subscribe(emit)
@@ -759,7 +759,7 @@ function createLazyAdapter(factory: () => OrbAdapter | Promise<OrbAdapter>): Orb
         const adapter = await getActiveAdapter()
         await adapter.start?.()
       } catch (error) {
-        console.error('[orb-ui/demo] Provider start failed:', error)
+        console.error('[kemo-ai/demo] Provider start failed:', error)
         emit({ state: 'error', inputVolume: 0, outputVolume: 0, error })
       }
     },
@@ -920,7 +920,7 @@ function createProviderAdapter(
     return createLazyAdapter(async () => {
       if (config.liveKitConnectionMode === 'sandbox') {
         const { createLiveKitAdapter: createManagedLiveKitAdapter } =
-          await import('orb-ui/adapters/livekit')
+          await import('kemo-ai/adapters/livekit')
         return createManagedLiveKitAdapter({
           sandboxId: config.liveKitSandboxId,
           agentName: config.liveKitAgentName,
@@ -934,7 +934,7 @@ function createProviderAdapter(
 
       if (config.liveKitConnectionMode === 'endpoint') {
         const { createLiveKitAdapter: createManagedLiveKitAdapter } =
-          await import('orb-ui/adapters/livekit')
+          await import('kemo-ai/adapters/livekit')
         return createManagedLiveKitAdapter({
           tokenEndpoint: config.liveKitTokenEndpoint,
           agentName: config.liveKitAgentName,

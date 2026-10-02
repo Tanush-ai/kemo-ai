@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Orb } from 'orb-ui'
-import type { OrbSignal, OrbState, OrbThemeName } from 'orb-ui'
+import { Orb } from 'kemo-ai'
+import type { OrbSignal, OrbState, OrbThemeName } from 'kemo-ai'
 import { highlightTsx } from './syntax-highlight'
 
 // Constants
 const STATES: OrbState[] = ['idle', 'connecting', 'listening', 'thinking', 'speaking', 'error']
 const THEMES: OrbThemeName[] = ['circle', 'bars', 'cloud', 'radial', 'debug']
-const GITHUB_REPO_URL = 'https://github.com/exprmntl/orb-ui'
-const NPM_PACKAGE_URL = 'https://www.npmjs.com/package/orb-ui'
+const GITHUB_REPO_URL = 'https://github.com/Tanush-ai/kemo-ai'
+const NPM_PACKAGE_URL = 'https://www.npmjs.com/package/kemo-ai'
 const GITHUB_STAR_COLOR = '#8bc7ff'
 
 type DemoMode = 'simulation' | 'manual'
@@ -31,8 +31,8 @@ const MONOSPACE_FONT =
   'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace'
 
 const VAPI_CODE = `import Vapi from "@vapi-ai/web"
-import { Orb } from "orb-ui"
-import { createVapiAdapter } from "orb-ui/adapters"
+import { Orb } from "kemo-ai"
+import { createVapiAdapter } from "kemo-ai/adapters"
 
 const vapi = new Vapi("your-public-key")
 const adapter = createVapiAdapter(vapi, {
@@ -44,8 +44,8 @@ export function VoiceOrb() {
 }`
 
 const ELEVENLABS_CODE = `import { Conversation } from "@elevenlabs/client"
-import { Orb } from "orb-ui"
-import { createElevenLabsAdapter } from "orb-ui/adapters"
+import { Orb } from "kemo-ai"
+import { createElevenLabsAdapter } from "kemo-ai/adapters"
 
 const adapter = createElevenLabsAdapter(Conversation, {
   agentId: "your-agent-id"
@@ -55,8 +55,8 @@ export function VoiceOrb() {
   return <Orb adapter={adapter} theme="circle" aria-label="Start voice assistant" />
 }`
 
-const CUSTOM_CODE = `import { Orb } from "orb-ui"
-import type { OrbAdapter } from "orb-ui"
+const CUSTOM_CODE = `import { Orb } from "kemo-ai"
+import type { OrbAdapter } from "kemo-ai"
 
 const adapter: OrbAdapter = {
   subscribe(listener) {
@@ -78,8 +78,8 @@ export function VoiceOrb() {
   return <Orb adapter={adapter} theme="circle" aria-label="Start voice assistant" />
 }`
 
-const LIVEKIT_CODE = `import { Orb } from "orb-ui"
-import { createLiveKitAdapter } from "orb-ui/adapters/livekit"
+const LIVEKIT_CODE = `import { Orb } from "kemo-ai"
+import { createLiveKitAdapter } from "kemo-ai/adapters/livekit"
 
 const adapter = createLiveKitAdapter({
   tokenEndpoint: "/api/livekit-token",
@@ -92,8 +92,8 @@ function App() {
 
 const PIPECAT_CODE = `import { PipecatClient } from "@pipecat-ai/client-js"
 import { SmallWebRTCTransport } from "@pipecat-ai/small-webrtc-transport"
-import { Orb } from "orb-ui"
-import { createPipecatAdapter } from "orb-ui/adapters"
+import { Orb } from "kemo-ai"
+import { createPipecatAdapter } from "kemo-ai/adapters"
 
 const client = new PipecatClient({
   transport: new SmallWebRTCTransport(),
@@ -107,8 +107,8 @@ export function VoiceOrb() {
   return <Orb adapter={adapter} theme="circle" aria-label="Start Pipecat assistant" />
 }`
 
-const OPENAI_CODE = `import { Orb } from "orb-ui"
-import { createOpenAILiveAdapter } from "orb-ui/adapters"
+const OPENAI_CODE = `import { Orb } from "kemo-ai"
+import { createOpenAILiveAdapter } from "kemo-ai/adapters"
 
 const adapter = createOpenAILiveAdapter({
   createSession: async (sdp, signal) => {
@@ -128,8 +128,8 @@ export function VoiceOrb() {
 }`
 
 const GEMINI_CODE = `import { GoogleGenAI } from "@google/genai"
-import { Orb } from "orb-ui"
-import { createGeminiLiveAdapter } from "orb-ui/adapters"
+import { Orb } from "kemo-ai"
+import { createGeminiLiveAdapter } from "kemo-ai/adapters"
 
 const adapter = createGeminiLiveAdapter({
   connect: async (callbacks) => {
@@ -1728,7 +1728,7 @@ export default function App() {
         <div className="site-nav__inner">
           <a href="/" className="site-nav__brand">
             <span className="site-nav__brand-mark" aria-hidden="true" />
-            orb-ui
+            kemo-ai
           </a>
 
           <div className="site-nav__actions">
@@ -1743,7 +1743,7 @@ export default function App() {
               href={GITHUB_REPO_URL}
               target="_blank"
               rel="noreferrer"
-              aria-label="Star orb-ui on GitHub"
+              aria-label="Star kemo-ai on GitHub"
               className="github-star-button"
             >
               <GitHubStarIcon />
@@ -1767,10 +1767,10 @@ export default function App() {
 
             <div className="hero-copy__actions">
               <div className="install-command">
-                <code>npm install orb-ui</code>
+                <code>npm install kemo-ai</code>
                 <button
                   type="button"
-                  onClick={() => handleCopy('install', 'npm install orb-ui')}
+                  onClick={() => handleCopy('install', 'npm install kemo-ai')}
                   aria-label="Copy npm install command"
                 >
                   {copiedTarget === 'install' ? 'Copied' : 'Copy'}
@@ -1905,7 +1905,7 @@ export default function App() {
           </div>
         </section>
 
-        <section className="proof-strip" aria-label="orb-ui product qualities">
+        <section className="proof-strip" aria-label="kemo-ai product qualities">
           <div className="proof-strip__inner">
             {PROOF_POINTS.map((point) => (
               <div key={point.label} className="proof-point">
@@ -2081,7 +2081,7 @@ export default function App() {
         <div className="site-footer__inner">
           <div className="site-footer__identity">
             <a href="/" className="site-footer__brand">
-              orb-ui
+              kemo-ai
             </a>
             <p className="site-footer__description">
               Expressive, accessible React UI for realtime voice agents. Connect the session you

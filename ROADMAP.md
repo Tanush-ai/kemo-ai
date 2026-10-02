@@ -1,4 +1,4 @@
-# orb-ui Roadmap
+# kemo-ai Roadmap
 
 This roadmap is public planning, not a promise of dates or exact release contents. It should help contributors understand where the project is headed without exposing private analytics, credentials, or internal notes.
 

@@ -8,7 +8,7 @@ import { highlightTsx } from '../src/syntax-highlight'
 
 const directory = fileURLToPath(new URL('.', import.meta.url))
 const origin = 'https://orb-ui.com'
-const author = { '@type': 'Organization', name: 'orb-ui', url: origin }
+const author = { '@type': 'Organization', name: 'kemo-ai', url: origin }
 const image = `${origin}/og-image-v3.png`
 const escape = (value: string) =>
   value.replace(

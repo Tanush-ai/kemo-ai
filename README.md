@@ -1,25 +1,25 @@
-# orb-ui
+# kemo-ai
 
-[![npm version](https://img.shields.io/npm/v/orb-ui.svg)](https://www.npmjs.com/package/orb-ui)
+[![npm version](https://img.shields.io/npm/v/kemo-ai.svg)](https://www.npmjs.com/package/kemo-ai)
 
 **Voice agent UI that feels alive.**
 
 Expressive, accessible React components for realtime voice agents. Connect Vapi, ElevenLabs, LiveKit, Pipecat, OpenAI Live, OpenAI Realtime, Gemini Live, or your own voice stack through one consistent UI layer.
 
 <p align="center">
-  <a href="https://orb-ui.com">
-    <img src="demo/public/og-image-v3.png" alt="orb-ui — Voice agent UI that feels alive" width="900" />
+  <a href="https://github.com/Tanush-ai/kemo-ai">
+    <img src="demo/public/og-image-v3.png" alt="kemo-ai — Voice agent UI that feels alive" width="900" />
   </a>
 </p>
 
 <p align="center">
-  <a href="https://orb-ui.com">Live demo</a> · <a href="https://orb-ui.com/docs">Documentation</a> · <a href="https://orb-ui.com/playground">Playground</a> · <a href="https://www.npmjs.com/package/orb-ui">npm</a> · <a href="https://github.com/exprmntl/orb-ui">Star on GitHub</a>
+  <a href="https://github.com/Tanush-ai/kemo-ai">Documentation</a> · <a href="https://www.npmjs.com/package/kemo-ai">npm</a> · <a href="https://github.com/Tanush-ai/kemo-ai">Star on GitHub</a>
 </p>
 
 ```jsx
 import Vapi from '@vapi-ai/web'
-import { Orb } from 'orb-ui'
-import { createVapiAdapter } from 'orb-ui/adapters'
+import { Orb } from 'kemo-ai'
+import { createVapiAdapter } from 'kemo-ai/adapters'
 
 const vapi = new Vapi('your-public-key')
 const adapter = createVapiAdapter(vapi, { assistantId: 'your-assistant-id' })
@@ -34,32 +34,32 @@ speaking motion. The adapter keeps microphone and output calibration separate.
 
 ## Install
 
-Install the [orb-ui package from npm](https://www.npmjs.com/package/orb-ui):
+Install the [kemo-ai package from npm](https://www.npmjs.com/package/kemo-ai):
 
 ```bash
-npm install orb-ui
+npm install kemo-ai
 ```
 
 Provider adapters are lightweight wrappers around provider SDKs. Install the SDK for the provider you use:
 
 ```bash
 # Vapi
-npm install orb-ui @vapi-ai/web
+npm install kemo-ai @vapi-ai/web
 
 # ElevenLabs Conversational AI
-npm install orb-ui @elevenlabs/client
+npm install kemo-ai @elevenlabs/client
 
 # LiveKit Agents
-npm install orb-ui livekit-client
+npm install kemo-ai livekit-client
 
 # Pipecat (choose the transport used by your agent)
-npm install orb-ui @pipecat-ai/client-js @pipecat-ai/small-webrtc-transport
+npm install kemo-ai @pipecat-ai/client-js @pipecat-ai/small-webrtc-transport
 
 # OpenAI Live and Realtime use browser WebRTC and need no additional client SDK
-npm install orb-ui
+npm install kemo-ai
 
 # Gemini Live
-npm install orb-ui @google/genai
+npm install kemo-ai @google/genai
 ```
 
 > **Note:** Orb uses React hooks internally — in Next.js App Router, use it in a `'use client'` component.
@@ -94,14 +94,14 @@ For an app-owned WebRTC, WebSocket, telephony, or speech runtime, follow the
 
 ## Quick Start
 
-Use orb-ui as a React voice AI component when you need a first-party provider voice UI or a custom animated voice orb for another realtime voice agent stack.
+Use kemo-ai as a React voice AI component when you need a first-party provider voice UI or a custom animated voice orb for another realtime voice agent stack.
 
 ### With Vapi
 
 ```jsx
 import Vapi from '@vapi-ai/web'
-import { Orb } from 'orb-ui'
-import { createVapiAdapter } from 'orb-ui/adapters'
+import { Orb } from 'kemo-ai'
+import { createVapiAdapter } from 'kemo-ai/adapters'
 
 const vapi = new Vapi('your-public-key')
 const adapter = createVapiAdapter(vapi, { assistantId: 'your-assistant-id' })
@@ -115,8 +115,8 @@ function App() {
 
 ```jsx
 import { Conversation } from '@elevenlabs/client'
-import { Orb } from 'orb-ui'
-import { createElevenLabsAdapter } from 'orb-ui/adapters'
+import { Orb } from 'kemo-ai'
+import { createElevenLabsAdapter } from 'kemo-ai/adapters'
 
 const adapter = createElevenLabsAdapter(Conversation, { agentId: 'your-agent-id' })
 
@@ -128,8 +128,8 @@ function App() {
 ### With LiveKit
 
 ```jsx
-import { Orb } from 'orb-ui'
-import { createLiveKitAdapter } from 'orb-ui/adapters/livekit'
+import { Orb } from 'kemo-ai'
+import { createLiveKitAdapter } from 'kemo-ai/adapters/livekit'
 
 const adapter = createLiveKitAdapter({
   tokenEndpoint: '/api/livekit-token',
@@ -143,15 +143,15 @@ function App() {
 
 The LiveKit entrypoint creates the room and token source, assigns a fresh room name, and meters both
 sides of the conversation with speech-oriented analyser and smoothing defaults. Existing-room and
-custom-runtime modes remain available from the advanced `orb-ui/adapters` entrypoint.
+custom-runtime modes remain available from the advanced `kemo-ai/adapters` entrypoint.
 
 ### With Pipecat
 
 ```jsx
 import { PipecatClient } from '@pipecat-ai/client-js'
 import { SmallWebRTCTransport } from '@pipecat-ai/small-webrtc-transport'
-import { Orb } from 'orb-ui'
-import { createPipecatAdapter } from 'orb-ui/adapters'
+import { Orb } from 'kemo-ai'
+import { createPipecatAdapter } from 'kemo-ai/adapters'
 
 const client = new PipecatClient({ transport: new SmallWebRTCTransport(), enableMic: true })
 const adapter = createPipecatAdapter(client, {
@@ -170,7 +170,7 @@ sparse audio-level events. See the [Pipecat guide](https://orb-ui.com/docs/adapt
 ### With OpenAI GPT-Live
 
 ```tsx
-import { createOpenAILiveAdapter } from 'orb-ui/adapters'
+import { createOpenAILiveAdapter } from 'kemo-ai/adapters'
 
 const adapter = createOpenAILiveAdapter({
   createSession: async (sdp, signal) => {
@@ -193,8 +193,8 @@ on your server. See the [OpenAI Live guide](https://orb-ui.com/docs/adapters/ope
 ### With OpenAI Realtime
 
 ```jsx
-import { Orb } from 'orb-ui'
-import { createOpenAIRealtimeAdapter } from 'orb-ui/adapters'
+import { Orb } from 'kemo-ai'
+import { createOpenAIRealtimeAdapter } from 'kemo-ai/adapters'
 
 const adapter = createOpenAIRealtimeAdapter({
   getClientSecret: async () => {
@@ -211,8 +211,8 @@ Create client secrets with a standard OpenAI API key on your server. See the
 
 ```jsx
 import { GoogleGenAI } from '@google/genai'
-import { Orb } from 'orb-ui'
-import { createGeminiLiveAdapter } from 'orb-ui/adapters'
+import { Orb } from 'kemo-ai'
+import { createGeminiLiveAdapter } from 'kemo-ai/adapters'
 
 const adapter = createGeminiLiveAdapter({
   connect: async (callbacks) => {
@@ -239,7 +239,7 @@ adapter guides.
 ### Controlled mode (custom integration)
 
 ```jsx
-import { Orb } from 'orb-ui'
+import { Orb } from 'kemo-ai'
 import { useState } from 'react'
 
 function App() {
@@ -262,7 +262,7 @@ function App() {
 Use `signal` when your integration has separate input and output levels:
 
 ```jsx
-import { Orb } from 'orb-ui'
+import { Orb } from 'kemo-ai'
 
 function App() {
   return <Orb signal={{ state: 'speaking', outputVolume: 0.7 }} theme="circle" />
@@ -293,7 +293,7 @@ For application-wide defaults, stable internal slots, responsive CSS variables, 
 custom artwork, use the advanced customization layer:
 
 ```tsx
-import { Orb, OrbThemeProvider } from 'orb-ui'
+import { Orb, OrbThemeProvider } from 'kemo-ai'
 ;<OrbThemeProvider theme={{ name: 'circle', preset: 'calm' }}>
   <Orb
     adapter={adapter}
@@ -368,20 +368,20 @@ the orb with the typed style variable:
 
 | Provider                                                                  | Adapter                                                             |
 | ------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| [Vapi](https://vapi.ai)                                                   | `createVapiAdapter` from `orb-ui/adapters`                          |
-| [ElevenLabs](https://elevenlabs.io/conversational-ai)                     | `createElevenLabsAdapter` from `orb-ui/adapters`                    |
-| [LiveKit](https://livekit.io)                                             | `createLiveKitAdapter` from `orb-ui/adapters`                       |
-| [Pipecat](https://pipecat.ai)                                             | `createPipecatAdapter` from `orb-ui/adapters`                       |
-| [OpenAI GPT-Live](https://developers.openai.com/api/docs/guides/live)     | `createOpenAILiveAdapter` from `orb-ui/adapters`                    |
-| [OpenAI Realtime](https://developers.openai.com/api/docs/guides/realtime) | `createOpenAIRealtimeAdapter` from `orb-ui/adapters`                |
-| [Gemini Live](https://ai.google.dev/gemini-api/docs/live-api)             | `createGeminiLiveAdapter` from `orb-ui/adapters`                    |
+| [Vapi](https://vapi.ai)                                                   | `createVapiAdapter` from `kemo-ai/adapters`                         |
+| [ElevenLabs](https://elevenlabs.io/conversational-ai)                     | `createElevenLabsAdapter` from `kemo-ai/adapters`                   |
+| [LiveKit](https://livekit.io)                                             | `createLiveKitAdapter` from `kemo-ai/adapters`                      |
+| [Pipecat](https://pipecat.ai)                                             | `createPipecatAdapter` from `kemo-ai/adapters`                      |
+| [OpenAI GPT-Live](https://developers.openai.com/api/docs/guides/live)     | `createOpenAILiveAdapter` from `kemo-ai/adapters`                   |
+| [OpenAI Realtime](https://developers.openai.com/api/docs/guides/realtime) | `createOpenAIRealtimeAdapter` from `kemo-ai/adapters`               |
+| [Gemini Live](https://ai.google.dev/gemini-api/docs/live-api)             | `createGeminiLiveAdapter` from `kemo-ai/adapters`                   |
 | Custom                                                                    | Use controlled mode with a directional `signal` or build an adapter |
 
 ## Development
 
 ```bash
-git clone https://github.com/exprmntl/orb-ui.git
-cd orb-ui
+git clone https://github.com/Tanush-ai/kemo-ai.git
+cd kemo-ai
 pnpm install
 
 # Build the library
@@ -400,7 +400,7 @@ pnpm changeset    # add release notes for a user-facing package change
 ```
 
 Releases are managed with Changesets. Merging a Changesets version PR publishes
-`orb-ui` to npm from GitHub Actions using npm trusted publishing.
+`kemo-ai` to npm from GitHub Actions using npm trusted publishing.
 
 ## License
 

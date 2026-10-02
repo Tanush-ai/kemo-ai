@@ -6,7 +6,7 @@ test('GPT-Live adapter negotiates browser WebRTC, meters audio, and finalizes', 
   await page.goto('/')
   const result = await page.evaluate(async () => {
     const { createOpenAILiveAdapter } = window as unknown as {
-      createOpenAILiveAdapter: typeof import('orb-ui/adapters').createOpenAILiveAdapter
+      createOpenAILiveAdapter: typeof import('kemo-ai/adapters').createOpenAILiveAdapter
     }
     const context = new AudioContext()
     await context.resume()
