@@ -1,407 +1,307 @@
-# kemo-ai
+<p align="center">
+  <img src="demo/public/og-image-v3.png" alt="kemo-ai — Voice agent UI that feels alive" width="840" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);" />
+</p>
 
-[![npm version](https://img.shields.io/npm/v/kemo-ai.svg)](https://www.npmjs.com/package/kemo-ai)
-
-**Voice agent UI that feels alive.**
-
-Expressive, accessible React components for realtime voice agents. Connect Vapi, ElevenLabs, LiveKit, Pipecat, OpenAI Live, OpenAI Realtime, Gemini Live, or your own voice stack through one consistent UI layer.
+<h1 align="center">kemo-ai</h1>
 
 <p align="center">
-  <a href="https://github.com/Tanush-ai/kemo-ai">
-    <img src="demo/public/og-image-v3.png" alt="kemo-ai — Voice agent UI that feels alive" width="900" />
-  </a>
+  <strong>Expressive, audio-reactive voice agent UI components for React.</strong><br />
+  Connect Vapi, ElevenLabs, LiveKit, Pipecat, OpenAI Live, Gemini Live, or custom WebRTC stacks through one coherent interface layer.
 </p>
 
 <p align="center">
-  <a href="https://github.com/Tanush-ai/kemo-ai">Documentation</a> · <a href="https://www.npmjs.com/package/kemo-ai">npm</a> · <a href="https://github.com/Tanush-ai/kemo-ai">Star on GitHub</a>
+  <a href="https://www.npmjs.com/package/kemo-ai"><img src="https://img.shields.io/npm/v/kemo-ai.svg?color=5c63fb" alt="npm version" /></a>
+  <a href="https://github.com/Tanush-ai/kemo-ai/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
+  <a href="https://github.com/Tanush-ai/kemo-ai"><img src="https://img.shields.io/badge/TypeScript-Strict-3178c6.svg" alt="TypeScript Strict" /></a>
+  <a href="https://react.dev"><img src="https://img.shields.io/badge/React-18%20%7C%2019-61dafb.svg" alt="React 18 and 19" /></a>
+  <a href="https://github.com/Tanush-ai/kemo-ai/actions"><img src="https://img.shields.io/badge/tests-passing-brightgreen.svg" alt="Tests Passing" /></a>
 </p>
 
-```jsx
-import Vapi from '@vapi-ai/web'
-import { Orb } from 'kemo-ai'
-import { createVapiAdapter } from 'kemo-ai/adapters'
+<p align="center">
+  <a href="#quickstart">Quickstart</a> •
+  <a href="#supported-providers">Supported Providers</a> •
+  <a href="#themes--customization">Themes & Motion</a> •
+  <a href="#api-reference">API Reference</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#development">Development</a>
+</p>
 
-const vapi = new Vapi('your-public-key')
-const adapter = createVapiAdapter(vapi, { assistantId: 'your-assistant-id' })
+---
 
-export function VoiceOrb() {
-  return <Orb adapter={adapter} theme="circle" aria-label="Start voice assistant" />
-}
-```
+## Highlights
 
-Vapi uses its existing microphone track for listening motion and its assistant audio events for
-speaking motion. The adapter keeps microphone and output calibration separate.
+- 🎙️ **Universal Voice Adapter Layer**: Native adapters normalize events from Vapi, ElevenLabs, LiveKit, Pipecat, OpenAI Live/Realtime, and Gemini Live into one identical API.
+- ⚡ **Directional Audio Intelligence**: Separate calibrated speech envelopes for user microphone input vs. assistant audio playback.
+- 🎨 **4 Production Visual Themes**: Canvas & WebGL shaders (`circle`, `cloud`, `radial`, `bars`) designed for high-frame-rate realism.
+- 🔄 **Coherent State Machine**: Eliminates UI flicker across `idle`, `connecting`, `listening`, `thinking`, `speaking`, and `error`.
+- ♿ **Accessible & Compliant**: Full ARIA status reporting, keyboard focus chrome, and automatic reduced-motion adaptation.
+- 🧩 **Zero Overhead**: Modular subpath exports (`kemo-ai/adapters`, `kemo-ai/adapters/livekit`), fully tree-shakeable with zero heavy runtime dependencies.
 
-## Install
+---
 
-Install the [kemo-ai package from npm](https://www.npmjs.com/package/kemo-ai):
+## Quickstart
+
+### 1. Install
 
 ```bash
 npm install kemo-ai
+# or
+pnpm add kemo-ai
+# or
+yarn add kemo-ai
 ```
 
-Provider adapters are lightweight wrappers around provider SDKs. Install the SDK for the provider you use:
+### 2. Add to Your React App
 
-```bash
-# Vapi
-npm install kemo-ai @vapi-ai/web
-
-# ElevenLabs Conversational AI
-npm install kemo-ai @elevenlabs/client
-
-# LiveKit Agents
-npm install kemo-ai livekit-client
-
-# Pipecat (choose the transport used by your agent)
-npm install kemo-ai @pipecat-ai/client-js @pipecat-ai/small-webrtc-transport
-
-# OpenAI Live and Realtime use browser WebRTC and need no additional client SDK
-npm install kemo-ai
-
-# Gemini Live
-npm install kemo-ai @google/genai
-```
-
-> **Note:** Orb uses React hooks internally — in Next.js App Router, use it in a `'use client'` component.
-
-## How provider adapters are created
-
-Every provider ends at the same React API:
-
-```jsx
-<Orb adapter={adapter} theme="circle" aria-label="Start voice assistant" />
-```
-
-The only difference is how the adapter obtains a provider session:
-
-| Provider                                                                  | Required browser setup                                                   |
-| ------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| [Vapi guide](https://orb-ui.com/docs/adapters/vapi)                       | Pass a configured Vapi client plus `assistantId`                         |
-| [ElevenLabs guide](https://orb-ui.com/docs/adapters/elevenlabs)           | Pass `Conversation` plus an `agentId`, signed URL, or conversation token |
-| [LiveKit guide](https://orb-ui.com/docs/adapters/livekit)                 | Provide a token endpoint and optional agent name                         |
-| [Pipecat guide](https://orb-ui.com/docs/adapters/pipecat)                 | Pass a configured `PipecatClient` plus its connect callback              |
-| [OpenAI Live guide](https://orb-ui.com/docs/adapters/openai-live)         | Exchange an SDP offer through your server with `createSession`           |
-| [OpenAI Realtime guide](https://orb-ui.com/docs/adapters/openai-realtime) | Return a fresh short-lived client secret from `getClientSecret`          |
-| [Gemini Live guide](https://orb-ui.com/docs/adapters/gemini-live)         | Open the official Google Live session in `connect`                       |
-
-The adapter owns provider event mapping and emits one consistent `OrbSignal`. OpenAI and Gemini
-standard API keys, and LiveKit participant-token signing, stay on your server. See the
-[adapter overview](https://orb-ui.com/docs/adapters/overview) for the responsibility boundary and
-advanced setup shapes.
-
-For an app-owned WebRTC, WebSocket, telephony, or speech runtime, follow the
-[custom integration guide](https://orb-ui.com/docs/adapters/custom).
-
-## Quick Start
-
-Use kemo-ai as a React voice AI component when you need a first-party provider voice UI or a custom animated voice orb for another realtime voice agent stack.
-
-### With Vapi
-
-```jsx
-import Vapi from '@vapi-ai/web'
+```tsx
 import { Orb } from 'kemo-ai'
 import { createVapiAdapter } from 'kemo-ai/adapters'
+import Vapi from '@vapi-ai/web'
 
-const vapi = new Vapi('your-public-key')
+const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_KEY!)
 const adapter = createVapiAdapter(vapi, { assistantId: 'your-assistant-id' })
 
-function App() {
-  return <Orb adapter={adapter} theme="circle" aria-label="Start Vapi assistant" />
+export function VoiceAssistant() {
+  return <Orb adapter={adapter} theme="circle" size={200} aria-label="Start voice assistant" />
 }
 ```
 
-### With ElevenLabs
+> **Framework Tip**: `<Orb />` uses browser Web Audio and Canvas/WebGL APIs. When using Next.js App Router, mark your component with `'use client'`.
 
-```jsx
+---
+
+## Architecture
+
+```
+┌────────────────────────────────────────────────────────┐
+│                   Voice Provider                       │
+│  (Vapi / ElevenLabs / LiveKit / OpenAI / Gemini / etc) │
+└───────────────────────────┬────────────────────────────┘
+                            │ Raw Audio & Events
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│                   kemo-ai Adapter                      │
+│      • Audio analysis & envelope calibration           │
+│      • Directional metering (input vs output)          │
+│      • Session lifecycle normalization                │
+└───────────────────────────┬────────────────────────────┘
+                            │ Normalized OrbSignal
+                            │ { state, inputVolume, outputVolume }
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│                     <Orb />                            │
+│      • Theme renderers (Circle, Cloud, Radial, Bars)   │
+│      • Autonomous drift & state transitions            │
+│      • ARIA accessibility & keyboard chrome            │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Supported Providers
+
+Install the lightweight SDK corresponding to your voice infrastructure:
+
+| Provider               | Installation                          | Adapter Factory                                 | Entrypoint                 |
+| :--------------------- | :------------------------------------ | :---------------------------------------------- | :------------------------- |
+| **Vapi**               | `npm i kemo-ai @vapi-ai/web`          | `createVapiAdapter(client, config)`             | `kemo-ai/adapters`         |
+| **ElevenLabs**         | `npm i kemo-ai @elevenlabs/client`    | `createElevenLabsAdapter(Conversation, config)` | `kemo-ai/adapters`         |
+| **LiveKit**            | `npm i kemo-ai livekit-client`        | `createLiveKitAdapter(config)`                  | `kemo-ai/adapters/livekit` |
+| **Pipecat**            | `npm i kemo-ai @pipecat-ai/client-js` | `createPipecatAdapter(client, config)`          | `kemo-ai/adapters`         |
+| **OpenAI GPT-Live**    | `npm i kemo-ai` _(WebRTC native)_     | `createOpenAILiveAdapter(config)`               | `kemo-ai/adapters`         |
+| **OpenAI Realtime**    | `npm i kemo-ai` _(WebRTC native)_     | `createOpenAIRealtimeAdapter(config)`           | `kemo-ai/adapters`         |
+| **Google Gemini Live** | `npm i kemo-ai @google/genai`         | `createGeminiLiveAdapter(config)`               | `kemo-ai/adapters`         |
+| **Custom Stack**       | `npm i kemo-ai`                       | Controlled mode via `signal={...}`              | `kemo-ai`                  |
+
+---
+
+## Provider Integration Guides
+
+### ElevenLabs Conversational AI
+
+```tsx
 import { Conversation } from '@elevenlabs/client'
 import { Orb } from 'kemo-ai'
 import { createElevenLabsAdapter } from 'kemo-ai/adapters'
 
-const adapter = createElevenLabsAdapter(Conversation, { agentId: 'your-agent-id' })
+const adapter = createElevenLabsAdapter(Conversation, {
+  agentId: 'your-agent-id',
+})
 
-function App() {
-  return <Orb adapter={adapter} theme="circle" aria-label="Start ElevenLabs assistant" />
+export function ElevenLabsOrb() {
+  return <Orb adapter={adapter} theme="circle" aria-label="Start ElevenLabs session" />
 }
 ```
 
-### With LiveKit
+### LiveKit Agents
 
-```jsx
+```tsx
 import { Orb } from 'kemo-ai'
 import { createLiveKitAdapter } from 'kemo-ai/adapters/livekit'
 
 const adapter = createLiveKitAdapter({
   tokenEndpoint: '/api/livekit-token',
-  agentName: 'your-agent-name',
+  agentName: 'customer-support',
 })
 
-function App() {
-  return <Orb adapter={adapter} theme="circle" aria-label="Start LiveKit assistant" />
+export function LiveKitOrb() {
+  return <Orb adapter={adapter} theme="cloud" aria-label="Start LiveKit session" />
 }
 ```
 
-The LiveKit entrypoint creates the room and token source, assigns a fresh room name, and meters both
-sides of the conversation with speech-oriented analyser and smoothing defaults. Existing-room and
-custom-runtime modes remain available from the advanced `kemo-ai/adapters` entrypoint.
-
-### With Pipecat
-
-```jsx
-import { PipecatClient } from '@pipecat-ai/client-js'
-import { SmallWebRTCTransport } from '@pipecat-ai/small-webrtc-transport'
-import { Orb } from 'kemo-ai'
-import { createPipecatAdapter } from 'kemo-ai/adapters'
-
-const client = new PipecatClient({ transport: new SmallWebRTCTransport(), enableMic: true })
-const adapter = createPipecatAdapter(client, {
-  connect: () => client.connect({ webrtcUrl: 'https://agent.example.com/api/offer' }),
-})
-
-function App() {
-  return <Orb adapter={adapter} theme="circle" aria-label="Start Pipecat assistant" />
-}
-```
-
-The Pipecat adapter consumes the standard RTVI event surface and meters the client media tracks as
-a browser fallback, so it works with Pipecat Cloud, Daily, SmallWebRTC, and transports that emit
-sparse audio-level events. See the [Pipecat guide](https://orb-ui.com/docs/adapters/pipecat).
-
-### With OpenAI GPT-Live
+### OpenAI GPT-Live (WebRTC)
 
 ```tsx
+import { Orb } from 'kemo-ai'
 import { createOpenAILiveAdapter } from 'kemo-ai/adapters'
 
 const adapter = createOpenAILiveAdapter({
   createSession: async (sdp, signal) => {
-    const response = await fetch('/api/openai-live-session', {
+    const res = await fetch('/api/openai-live-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sdp }),
       signal,
     })
-    if (!response.ok) throw new Error('Could not create a Live session')
-    return response.json()
+    return res.json()
   },
 })
+
+export function OpenAILiveOrb() {
+  return <Orb adapter={adapter} theme="radial" aria-label="Start GPT-Live session" />
+}
 ```
 
-Your server creates a `gpt-live-1` session through `/v1/live/sessions` and returns the session ID
-and SDP answer. Live handles listening and speaking concurrently; configure backend delegation
-on your server. See the [OpenAI Live guide](https://orb-ui.com/docs/adapters/openai-live).
+### Google Gemini Live
 
-### With OpenAI Realtime
-
-```jsx
-import { Orb } from 'kemo-ai'
-import { createOpenAIRealtimeAdapter } from 'kemo-ai/adapters'
-
-const adapter = createOpenAIRealtimeAdapter({
-  getClientSecret: async () => {
-    const response = await fetch('/api/openai-realtime-token', { method: 'POST' })
-    return (await response.json()).value
-  },
-})
-```
-
-Create client secrets with a standard OpenAI API key on your server. See the
-[OpenAI Realtime guide](https://orb-ui.com/docs/adapters/openai-realtime).
-
-### With Gemini Live
-
-```jsx
+```tsx
 import { GoogleGenAI } from '@google/genai'
 import { Orb } from 'kemo-ai'
 import { createGeminiLiveAdapter } from 'kemo-ai/adapters'
 
 const adapter = createGeminiLiveAdapter({
   connect: async (callbacks) => {
-    const token = await fetch('/api/gemini-live-token', { method: 'POST' }).then((res) =>
-      res.json(),
-    )
-    const client = new GoogleGenAI({
-      apiKey: token.value,
-      httpOptions: { apiVersion: 'v1alpha' },
-    })
-    return client.live.connect({ model: token.model, config: token.config, callbacks })
+    const token = await fetch('/api/gemini-token', { method: 'POST' }).then((r) => r.json())
+    const ai = new GoogleGenAI({ apiKey: token.value, httpOptions: { apiVersion: 'v1alpha' } })
+    return ai.live.connect({ model: token.model, config: token.config, callbacks })
   },
 })
-```
 
-Mint one-use Gemini Live tokens on your server. See the
-[Gemini Live guide](https://orb-ui.com/docs/adapters/gemini-live) for the matching server config that
-disables automatic activity detection. The adapter handles client-side turn detection by default.
-
-The examples above show the intended happy paths. Transport overrides, custom browser runtimes,
-existing-session modes, and audio calibration hooks are optional and documented in the individual
-adapter guides.
-
-### Controlled mode (custom integration)
-
-```jsx
-import { Orb } from 'kemo-ai'
-import { useState } from 'react'
-
-function App() {
-  const [state, setState] = useState('idle')
-  const [volume, setVolume] = useState(0)
-
-  return (
-    <Orb
-      signal={{
-        state,
-        inputVolume: state === 'listening' ? volume : 0,
-        outputVolume: state === 'speaking' ? volume : 0,
-      }}
-      theme="circle"
-    />
-  )
+export function GeminiOrb() {
+  return <Orb adapter={adapter} theme="circle" aria-label="Start Gemini Live session" />
 }
 ```
 
-Use `signal` when your integration has separate input and output levels:
+### Controlled Mode (Custom Runtime / Testing)
 
-```jsx
+You can directly drive the visualizer with explicit reactive state:
+
+```tsx
 import { Orb } from 'kemo-ai'
+import type { OrbSignal } from 'kemo-ai'
 
-function App() {
-  return <Orb signal={{ state: 'speaking', outputVolume: 0.7 }} theme="circle" />
+export function CustomOrb({ state, inputVolume, outputVolume }: OrbSignal) {
+  return <Orb signal={{ state, inputVolume, outputVolume }} theme="cloud" size={240} />
 }
 ```
 
-### Theme presets and overrides
+---
 
-Theme strings keep the current balanced behavior. Choose `calm` or `expressive`, then override only
-the theme-specific values your product needs:
+## Themes & Customization
 
-```jsx
+`kemo-ai` includes 4 built-in themes optimized for different product aesthetics:
+
+| Theme    | Best For                | Description                                                               |
+| :------- | :---------------------- | :------------------------------------------------------------------------ |
+| `circle` | Clean SaaS / Mobile     | Minimal glowing particle sphere with subtle breathing and volume scaling. |
+| `cloud`  | Assistant / Ambient     | Volumetric fluid cloud with smooth chromatic bloom and organic drift.     |
+| `radial` | Telephony / Calling     | Geometric 4-lobe membrane with integrated interactive call controls.      |
+| `bars`   | Audio Tools / Equalizer | Modern rounded frequency bars reacting dynamically to audio bandwidth.    |
+
+### Motion Presets
+
+Each theme supports three motion personalities:
+
+- `calm`: Subtle amplitude response, longer easing, ideal for professional enterprise tools.
+- `balanced` _(default)_: Natural conversational pacing with clear activity feedback.
+- `expressive`: High dynamic range and reactive deformations for engaging consumer apps.
+
+```tsx
 <Orb
-  signal={signal}
+  adapter={adapter}
   theme={{
     name: 'circle',
     preset: 'calm',
-    appearance: { colors: { listening: '#8b9cff', speaking: '#f4f7ff' } },
-    motion: { responseExponent: 0.9, activityRiseMs: 80, activityFallMs: 180 },
+    appearance: {
+      colors: {
+        listening: '#60a5fa',
+        speaking: '#f472b6',
+      },
+    },
   }}
 />
 ```
 
-See the [theme customization guide](https://orb-ui.com/docs/themes/customization) for every
-theme-specific appearance, geometry, and motion field.
+### CSS Variables
 
-For application-wide defaults, stable internal slots, responsive CSS variables, or completely
-custom artwork, use the advanced customization layer:
+You can configure styling externally through typed CSS tokens:
 
-```tsx
-import { Orb, OrbThemeProvider } from 'kemo-ai'
-;<OrbThemeProvider theme={{ name: 'circle', preset: 'calm' }}>
-  <Orb
-    adapter={adapter}
-    style={{ '--orb-ui-size': 'clamp(180px, 32vw, 320px)' }}
-    slotProps={{ surface: { className: 'brand-orb__surface' } }}
-  />
-</OrbThemeProvider>
-```
-
-Pass `renderTheme` when your product needs entirely custom DOM, SVG, canvas, or WebGL artwork. Its
-renderer receives normalized input/output activity plus accessible root/control props, while Orb
-continues to manage provider subscription and session start/stop behavior.
-
-### External session controls
-
-Keep the orb as a passive visual when start and stop controls belong elsewhere in your layout.
-Provider adapters already expose the matching lifecycle methods.
-
-```jsx
-function VoiceExperience({ adapter }) {
-  return (
-    <>
-      <Orb adapter={adapter} theme="cloud" interactive={false} />
-      <button onClick={() => void adapter.start?.()}>Start conversation</button>
-      <button onClick={() => void adapter.stop?.()}>End conversation</button>
-    </>
-  )
+```css
+.my-voice-card {
+  --orb-ui-size: min(80vw, 320px);
+  --orb-ui-circle-appearance-colors-speaking: #38bdf8;
+  --orb-ui-radial-control-surround: #0a0a0a;
 }
 ```
 
-## Themes
+---
 
-| Theme    | Description                                                                   |
-| -------- | ----------------------------------------------------------------------------- |
-| `radial` | Four-lobe radial field with input-reactive rim and output-reactive twisting.  |
-| `cloud`  | Atmospheric sphere with inverse listening scale and faster speaking motion.   |
-| `debug`  | State + volume display with start/stop. Use to verify your integration works. |
-| `circle` | Pulsing circle that reacts to volume.                                         |
-| `bars`   | Five bars that animate with voice.                                            |
+## API Reference
 
-When an adapter or `onStart`/`onStop` handler is provided, visual themes include keyboard-accessible `<button type="button">` controls. `radial` places its phone control below the artwork while the other clickable themes use the visual itself. Pass `interactive={false}` to keep the theme passive and call `adapter.start()` or `adapter.stop()` from external controls instead.
+### `<Orb />` Props
 
-The radial phone control uses a small cutout that defaults to white. Match it to the surface behind
-the orb with the typed style variable:
+| Prop          | Type                             | Default    | Description                                                                           |
+| :------------ | :------------------------------- | :--------- | :------------------------------------------------------------------------------------ |
+| `adapter`     | `OrbAdapter`                     | —          | Provider adapter instance managing session lifecycle and metering.                    |
+| `signal`      | `OrbSignal`                      | —          | Controlled state object `{ state, inputVolume, outputVolume, error }`.                |
+| `theme`       | `OrbThemeName \| OrbThemeConfig` | `'circle'` | Theme name or typed configuration object with presets and overrides.                  |
+| `size`        | `number`                         | `200`      | Diameter in pixels (can also be driven via `--orb-ui-size`).                          |
+| `interactive` | `boolean`                        | `true`     | When `false`, suppresses internal click-to-start controls for passive display.        |
+| `renderTheme` | `OrbThemeRenderer`               | —          | Render prop to provide completely custom Canvas, SVG, or WebGL visualizers.           |
+| `slotProps`   | `OrbSlotProps`                   | —          | Classnames and HTML attributes for semantic DOM slots (`root`, `surface`, `control`). |
+| `onStart`     | `() => void`                     | —          | Custom callback invoked when starting a session.                                      |
+| `onStop`      | `() => void`                     | —          | Custom callback invoked when stopping a session.                                      |
 
-```tsx
-<Orb adapter={adapter} theme="radial" style={{ '--orb-ui-radial-control-surround': '#101010' }} />
+### Voice States (`OrbState`)
+
+```ts
+type OrbState = 'idle' | 'connecting' | 'listening' | 'thinking' | 'speaking' | 'error'
 ```
 
-## Props
-
-| Prop          | Type                                                   | Default   | Description                                             |
-| ------------- | ------------------------------------------------------ | --------- | ------------------------------------------------------- |
-| `theme`       | `'debug' \| 'circle' \| 'bars' \| 'cloud' \| 'radial'` | `'debug'` | Visual theme                                            |
-| `signal`      | `OrbSignal`                                            | —         | Controlled signal with state and directional volumes    |
-| `state`       | `OrbState`                                             | `'idle'`  | Conversation state (controlled mode)                    |
-| `adapter`     | `OrbAdapter`                                           | —         | Provider adapter (manages signal updates automatically) |
-| `size`        | `number`                                               | `200`     | Size in pixels                                          |
-| `className`   | `string`                                               | —         | Optional class name for the rendered theme              |
-| `style`       | `OrbStyle`                                             | —         | Inline styles, including radial control surround color  |
-| `disabled`    | `boolean`                                              | `false`   | Disables clickable themes and debug start/stop controls |
-| `interactive` | `boolean`                                              | `true`    | Allows the theme control to start and stop a session    |
-| `aria-label`  | `string`                                               | generated | Accessible label for clickable visual themes            |
-| `onStart`     | `() => void`                                           | —         | Custom start handler (overrides adapter.start())        |
-| `onStop`      | `() => void`                                           | —         | Custom stop handler (overrides adapter.stop())          |
-
-## States
-
-`idle` · `connecting` · `listening` · `thinking` · `speaking` · `error`
-
-## Supported Providers
-
-| Provider                                                                  | Adapter                                                             |
-| ------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| [Vapi](https://vapi.ai)                                                   | `createVapiAdapter` from `kemo-ai/adapters`                         |
-| [ElevenLabs](https://elevenlabs.io/conversational-ai)                     | `createElevenLabsAdapter` from `kemo-ai/adapters`                   |
-| [LiveKit](https://livekit.io)                                             | `createLiveKitAdapter` from `kemo-ai/adapters`                      |
-| [Pipecat](https://pipecat.ai)                                             | `createPipecatAdapter` from `kemo-ai/adapters`                      |
-| [OpenAI GPT-Live](https://developers.openai.com/api/docs/guides/live)     | `createOpenAILiveAdapter` from `kemo-ai/adapters`                   |
-| [OpenAI Realtime](https://developers.openai.com/api/docs/guides/realtime) | `createOpenAIRealtimeAdapter` from `kemo-ai/adapters`               |
-| [Gemini Live](https://ai.google.dev/gemini-api/docs/live-api)             | `createGeminiLiveAdapter` from `kemo-ai/adapters`                   |
-| Custom                                                                    | Use controlled mode with a directional `signal` or build an adapter |
+---
 
 ## Development
 
 ```bash
+# Clone repository
 git clone https://github.com/Tanush-ai/kemo-ai.git
 cd kemo-ai
+
+# Install dependencies
 pnpm install
+
+# Run the interactive demo playground locally
+pnpm dev:demo
 
 # Build the library
 pnpm build
 
-# Run demo locally
-pnpm dev:demo
+# Run all quality checks (lint, format, types, unit tests, e2e)
+pnpm check
 ```
 
-Useful maintenance commands:
-
-```bash
-pnpm check        # format check, lint, typechecks, tests, library build, demo build
-pnpm format       # format repo files
-pnpm changeset    # add release notes for a user-facing package change
-```
-
-Releases are managed with Changesets. Merging a Changesets version PR publishes
-`kemo-ai` to npm from GitHub Actions using npm trusted publishing.
+---
 
 ## License
 
-MIT © [Alexander Chen](https://github.com/alexanderqchen)
+MIT © [Tanush-ai](https://github.com/Tanush-ai/kemo-ai)

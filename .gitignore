@@ -10,3 +10,6 @@ demo/.vercel
 outputs
 playwright-report
 test-results
+coverage
+*.log
+.cache
