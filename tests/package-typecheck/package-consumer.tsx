@@ -1,0 +1,184 @@
+import { Orb, OrbThemeProvider, defineOrbTheme } from 'orb-ui'
+import type { OrbThemeRenderer } from 'orb-ui'
+import {
+  createElevenLabsAdapter,
+  createGeminiLiveAdapter,
+  createLiveKitAdapter as createAdvancedLiveKitAdapter,
+  createOpenAILiveAdapter,
+  createOpenAIRealtimeAdapter,
+  createPipecatAdapter,
+} from 'orb-ui/adapters'
+import { createLiveKitAdapter } from 'orb-ui/adapters/livekit'
+import type { LiveKitBrowserAdapterConfig } from 'orb-ui/adapters/livekit'
+import type {
+  ElevenLabsConversationClass,
+  GeminiLiveSession,
+  LiveKitAdapterConfig,
+  OrbAdapter,
+  OrbSignal,
+  PipecatClientLike,
+} from 'orb-ui/adapters'
+
+const Conversation: ElevenLabsConversationClass = {
+  startSession: async () => ({
+    endSession: async () => undefined,
+    getInputVolume: () => 0,
+    getOutputVolume: () => 0,
+    getInputByteFrequencyData: () => new Uint8Array(),
+    getOutputByteFrequencyData: () => new Uint8Array(),
+  }),
+}
+
+const elevenLabsAdapter = createElevenLabsAdapter(Conversation, {
+  agentId: 'agent-id',
+})
+
+const customAdapter: OrbAdapter = {
+  subscribe: (listener) => {
+    listener({ state: 'thinking' })
+    return () => undefined
+  },
+}
+
+const signal: OrbSignal = {
+  state: 'speaking',
+  outputVolume: 0.7,
+}
+
+const applicationTheme = defineOrbTheme({
+  name: 'circle',
+  preset: 'calm',
+  appearance: { colors: { speaking: '#ff55aa' } },
+})
+
+const customRenderer: OrbThemeRenderer = ({ activity, controlProps, rootProps, state }) => (
+  <div {...rootProps}>
+    <button {...controlProps}>
+      {state}:{activity.toFixed(2)}
+    </button>
+  </div>
+)
+
+const liveKitConfig: LiveKitAdapterConfig = {
+  getConnectionDetails: async () => ({
+    serverUrl: 'wss://example.livekit.cloud',
+    participantToken: 'livekit-token',
+  }),
+  createAudioAnalyser: () => ({
+    calculateVolume: () => 0,
+    cleanup: async () => undefined,
+  }),
+  RoomClass: class {
+    remoteParticipants = new Map()
+    localParticipant = {
+      setMicrophoneEnabled: async () => undefined,
+    }
+    state = 'disconnected'
+    connect = async () => undefined
+    disconnect = () => undefined
+    on = () => undefined
+    off = () => undefined
+  },
+}
+
+const advancedLiveKitAdapter = createAdvancedLiveKitAdapter(liveKitConfig)
+const liveKitBrowserConfig: LiveKitBrowserAdapterConfig = {
+  tokenEndpoint: '/api/livekit-token',
+  agentName: 'support-agent',
+  outputVolumeCalibration: { envelope: { riseTimeMs: 300 } },
+}
+const liveKitAdapter = createLiveKitAdapter(liveKitBrowserConfig)
+
+const pipecatClient: PipecatClientLike = {
+  on: () => undefined,
+  off: () => undefined,
+  connect: async () => undefined,
+  disconnect: async () => undefined,
+}
+const pipecatAdapter = createPipecatAdapter(pipecatClient, {
+  outputVolumeCalibration: { envelope: { fallTimeMs: 200 } },
+})
+
+const openAILiveAdapter = createOpenAILiveAdapter({
+  createSession: async (sdp, signal) => {
+    const response = await fetch('/api/openai-live-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sdp }),
+      signal,
+    })
+    if (!response.ok) throw new Error('Could not create a Live session')
+    return response.json()
+  },
+  onEvent: (event) => {
+    const type: string = event.type
+    void type
+  },
+})
+
+const openAIRealtimeAdapter = createOpenAIRealtimeAdapter({
+  getClientSecret: async () => 'short-lived-client-secret',
+})
+
+const geminiSession: GeminiLiveSession = {
+  sendRealtimeInput: () => undefined,
+  close: () => undefined,
+}
+const geminiLiveAdapter = createGeminiLiveAdapter({
+  connect: async () => geminiSession,
+})
+
+export function PackageConsumerSmoke() {
+  return (
+    <>
+      <Orb adapter={elevenLabsAdapter} theme="circle" aria-label="Start ElevenLabs assistant" />
+      <Orb adapter={liveKitAdapter} theme="circle" aria-label="Start LiveKit assistant" />
+      <Orb
+        adapter={advancedLiveKitAdapter}
+        theme="circle"
+        aria-label="Start app-managed LiveKit assistant"
+      />
+      <Orb adapter={openAILiveAdapter} theme="circle" aria-label="Start GPT-Live assistant" />
+      <Orb adapter={pipecatAdapter} theme="circle" aria-label="Start Pipecat assistant" />
+      <Orb adapter={openAIRealtimeAdapter} theme="circle" aria-label="Start OpenAI assistant" />
+      <Orb adapter={geminiLiveAdapter} theme="circle" aria-label="Start Gemini assistant" />
+      <Orb adapter={customAdapter} theme="debug" />
+      <Orb signal={signal} theme="circle" />
+      <Orb
+        signal={{ state: 'speaking', outputVolume: 0.65 }}
+        style={{ '--orb-ui-radial-control-surround': '#101010' }}
+        theme="radial"
+      />
+      <Orb adapter={customAdapter} interactive={false} theme="cloud" />
+      <Orb
+        signal={signal}
+        theme={{
+          name: 'radial',
+          preset: 'expressive',
+          appearance: { aquaColor: '#44dddd', activeControlColor: '#ff3344' },
+          geometry: { diameterRatio: 0.7 },
+          motion: { rotationAmount: 1.2, stateTransitionMs: 240 },
+        }}
+      />
+      <OrbThemeProvider
+        slotProps={{ surface: { className: 'brand-surface' } }}
+        theme={applicationTheme}
+      >
+        <Orb
+          signal={signal}
+          style={{
+            '--orb-ui-size': 'min(70vw, 320px)',
+            '--orb-ui-circle-geometry-diameter-ratio': 0.7,
+          }}
+          theme={{ name: 'circle', appearance: { speakingGlow: 40 } }}
+        />
+      </OrbThemeProvider>
+      <Orb adapter={customAdapter} renderTheme={customRenderer} />
+      <Orb
+        adapter={customAdapter}
+        components={{ controlIcon: <span>Custom icon</span> }}
+        theme="radial"
+      />
+    </>
+  )
+}

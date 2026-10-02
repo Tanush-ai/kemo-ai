@@ -1,0 +1,222 @@
+import Vapi from '@vapi-ai/web'
+import { Conversation } from '@elevenlabs/client'
+import { GoogleGenAI, Modality } from '@google/genai'
+import { PipecatClient } from '@pipecat-ai/client-js'
+import { SmallWebRTCTransport } from '@pipecat-ai/small-webrtc-transport'
+import { Orb, OrbThemeProvider, defineOrbTheme } from '../../src'
+import type { OrbThemeRenderer } from '../../src'
+import {
+  createElevenLabsAdapter,
+  createGeminiLiveAdapter,
+  createOpenAILiveAdapter,
+  createOpenAIRealtimeAdapter,
+  createPipecatAdapter,
+  createVapiAdapter,
+} from '../../src/adapters'
+import { createLiveKitAdapter } from '../../src/adapters/livekit/browser'
+import type { OrbAdapter, OrbSignal } from '../../src/adapters'
+// @ts-expect-error AdapterCallbacks was removed in orb-ui 0.5.
+import type { AdapterCallbacks } from '../../src/adapters'
+// @ts-expect-error LegacyOrbAdapter was removed in orb-ui 0.5.
+import type { LegacyOrbAdapter } from '../../src/adapters'
+
+const vapi = new Vapi('public-key')
+const vapiAdapter = createVapiAdapter(vapi, {
+  assistantId: 'assistant-id',
+})
+
+const elevenLabsAdapter = createElevenLabsAdapter(Conversation, {
+  agentId: 'agent-id',
+})
+
+const signedUrlElevenLabsAdapter = createElevenLabsAdapter(Conversation, {
+  signedUrl: 'https://example.com/signed-url',
+})
+
+const tokenElevenLabsAdapter = createElevenLabsAdapter(Conversation, {
+  conversationToken: 'conversation-token',
+})
+
+const liveKitAdapter = createLiveKitAdapter({
+  tokenEndpoint: '/api/livekit-token',
+  agentName: 'support-agent',
+  outputVolumeCalibration: { envelope: { fallTimeMs: 120 } },
+  onOutputVolumeSample: ({ normalized }) => void normalized,
+})
+
+// @ts-expect-error LiveKit sandbox sessions must identify the agent to dispatch.
+createLiveKitAdapter({ sandboxId: 'sandbox-123' })
+
+// @ts-expect-error Choose a token endpoint or a sandbox, never both.
+createLiveKitAdapter({
+  tokenEndpoint: '/api/livekit-token',
+  sandboxId: 'sandbox-123',
+  agentName: 'support-agent',
+})
+
+const pipecatClient = new PipecatClient({
+  transport: new SmallWebRTCTransport(),
+  enableMic: true,
+})
+const pipecatAdapter = createPipecatAdapter(pipecatClient, {
+  connect: () => pipecatClient.connect({ webrtcUrl: 'https://agent.example.com/api/offer' }),
+  outputVolumeCalibration: () => ({ amplitude: { speechPeak: 0.35 } }),
+  onOutputVolumeSample: ({ raw }) => void raw,
+})
+
+const openAILiveAdapter = createOpenAILiveAdapter({
+  createSession: async (sdp, signal) => {
+    const response = await fetch('/api/openai-live-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sdp }),
+      signal,
+    })
+    if (!response.ok) throw new Error('Could not create a Live session')
+    return response.json()
+  },
+  onEvent: (event) => {
+    const type: string = event.type
+    void type
+  },
+})
+
+const openAIRealtimeAdapter = createOpenAIRealtimeAdapter({
+  getClientSecret: async () => ({ value: 'short-lived-client-secret' }),
+})
+
+const geminiClient = new GoogleGenAI({ apiKey: 'short-lived-live-token' })
+const geminiLiveAdapter = createGeminiLiveAdapter({
+  connect: async (callbacks) =>
+    geminiClient.live.connect({
+      model: 'gemini-3.1-flash-live-preview',
+      config: { responseModalities: [Modality.AUDIO] },
+      callbacks,
+    }),
+})
+
+const customSignalAdapter: OrbAdapter = {
+  subscribe(listener) {
+    listener({ state: 'thinking' })
+    listener({ state: 'speaking', outputVolume: 0.7 })
+    return () => undefined
+  },
+}
+
+const callbackObjectAdapter = {
+  subscribe(callbacks: {
+    onStateChange(state: 'listening'): void
+    onVolumeChange(volume: number): void
+  }) {
+    callbacks.onStateChange('listening')
+    callbacks.onVolumeChange(0.4)
+    return () => undefined
+  },
+}
+
+// @ts-expect-error Callback-object adapters are not valid OrbAdapter implementations in 0.5.
+const removedCallbackObjectAdapter: OrbAdapter = callbackObjectAdapter
+
+void removedCallbackObjectAdapter
+void (undefined as unknown as AdapterCallbacks)
+void (undefined as unknown as LegacyOrbAdapter)
+
+const signal: OrbSignal = {
+  state: 'speaking',
+  inputVolume: 0.1,
+  outputVolume: 0.7,
+}
+
+const sharedTheme = defineOrbTheme({
+  name: 'bars',
+  preset: 'expressive',
+  appearance: { colors: { listening: '#22ddaa' } },
+})
+
+const customRenderer: OrbThemeRenderer = ({ controlProps, rootProps, state }) => (
+  <div {...rootProps}>
+    <button {...controlProps}>{state}</button>
+  </div>
+)
+
+// @ts-expect-error ElevenLabs sessions require agentId, signedUrl, or conversationToken.
+createElevenLabsAdapter(Conversation, {})
+
+// @ts-expect-error signedUrl sessions only support websocket connections.
+createElevenLabsAdapter(Conversation, {
+  signedUrl: 'https://example.com/signed-url',
+  connectionType: 'webrtc',
+})
+
+createElevenLabsAdapter(Conversation, {
+  agentId: 'agent-id',
+  // @ts-expect-error orb-ui needs a voice-capable ElevenLabs session.
+  textOnly: true,
+})
+
+export function ProviderAdapterSmokeExamples() {
+  return (
+    <>
+      <Orb
+        adapter={vapiAdapter}
+        theme="circle"
+        id="vapi-orb"
+        aria-label="Start Vapi voice assistant"
+        disabled={false}
+      />
+      <Orb
+        adapter={elevenLabsAdapter}
+        theme="bars"
+        id="elevenlabs-orb"
+        aria-label="Start ElevenLabs voice assistant"
+        disabled={false}
+      />
+      <Orb
+        adapter={signedUrlElevenLabsAdapter}
+        theme="circle"
+        aria-label="Start private ElevenLabs voice assistant"
+      />
+      <Orb
+        adapter={tokenElevenLabsAdapter}
+        theme="circle"
+        aria-label="Start token-based ElevenLabs voice assistant"
+      />
+      <Orb adapter={liveKitAdapter} theme="circle" aria-label="Start LiveKit voice assistant" />
+      <Orb adapter={openAILiveAdapter} theme="circle" aria-label="Start GPT-Live assistant" />
+      <Orb adapter={pipecatAdapter} theme="circle" aria-label="Start Pipecat voice assistant" />
+      <Orb
+        adapter={openAIRealtimeAdapter}
+        theme="circle"
+        aria-label="Start OpenAI Realtime voice assistant"
+      />
+      <Orb
+        adapter={geminiLiveAdapter}
+        theme="circle"
+        aria-label="Start Gemini Live voice assistant"
+      />
+      <Orb adapter={customSignalAdapter} theme="circle" aria-label="Start custom voice assistant" />
+      <Orb signal={signal} theme="circle" />
+      <Orb signal={{ state: 'listening', inputVolume: 0.45 }} theme="radial" />
+      <Orb adapter={customSignalAdapter} interactive={false} theme="cloud" />
+      <Orb
+        signal={signal}
+        theme={{
+          name: 'circle',
+          preset: 'calm',
+          appearance: { colors: { speaking: '#f8f0ff' }, speakingGlow: 30 },
+          geometry: { speakingMaxScale: 1.08 },
+          motion: { responseExponent: 0.9, activityRiseMs: 80, activityFallMs: 180 },
+        }}
+      />
+      <OrbThemeProvider theme={sharedTheme}>
+        <Orb
+          signal={signal}
+          slotProps={{ bar: { className: 'custom-bar', style: { opacity: 0.9 } } }}
+          style={{ '--orb-ui-size': 'clamp(180px, 30vw, 300px)' }}
+        />
+      </OrbThemeProvider>
+      <Orb adapter={customSignalAdapter} renderTheme={customRenderer} />
+      <Orb signal={{ state: 'listening', inputVolume: 0.4 }} theme="debug" id="controlled-orb" />
+    </>
+  )
+}

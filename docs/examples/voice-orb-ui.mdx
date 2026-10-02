@@ -1,0 +1,267 @@
+---
+title: Voice Orb Animation in React
+description: Try an interactive React voice orb, switch themes and voice states, and build audio-reactive animation with orb-ui. Includes code and provider integration examples.
+---
+
+A React voice orb is the visible state layer for a voice agent. It should make listening, thinking,
+speaking, and error states understandable at a glance while staying out of the way of the
+conversation.
+
+## Try the voice orb animation
+
+Choose a theme and motion preset, then switch between listening, thinking, and speaking. Move the
+input slider while listening or the output slider while speaking to see the animation respond.
+This preview uses simulated levels and does not open your microphone or start a provider session.
+
+<iframe
+  src="https://orb-ui.com/demos/voice-orb/"
+  title="Interactive React voice orb animation: themes, states, and audio levels"
+  width="100%"
+  height="700"
+  loading="lazy"
+  style={{ border: 0, borderRadius: '12px' }}
+/>
+
+[Open the voice orb preview in a separate page](https://orb-ui.com/demos/voice-orb/).
+The React code panel reflects your current selections.
+
+The same signal drives every theme. `circle` is a compact orb, `cloud` is an atmospheric sphere,
+`radial` separates input and output motion, and `bars` offers a waveform-style alternative.
+Some themes intentionally share a visual treatment between states. The passive cloud visual
+disappears when idle or in error, so always include a text status.
+
+## Build an animated voice orb in React
+
+Start with a controlled `Orb` when you want to preview the component before connecting a live
+voice provider:
+
+```bash
+npm install orb-ui
+```
+
+```tsx
+import { Orb } from 'orb-ui'
+
+export function VoiceOrbExample() {
+  return <Orb signal={{ state: 'listening', inputVolume: 0.45 }} theme="circle" size={260} />
+}
+```
+
+This renders an animated voice orb in its listening state. For a production voice experience,
+drive the state and volume from a real session. A fixed value is useful for previews and visual
+tests, but it should not be used to imply that the microphone or assistant is active.
+
+## Simulate the full lifecycle
+
+Before connecting a provider, build a small test surface that can show every supported state:
+
+```tsx
+import { useState } from 'react'
+import { Orb, type OrbState } from 'orb-ui'
+
+const states: OrbState[] = ['idle', 'connecting', 'listening', 'thinking', 'speaking', 'error']
+
+export function OrbStatePreview() {
+  const [state, setState] = useState<OrbState>('idle')
+  const [inputVolume, setInputVolume] = useState(0.45)
+  const [outputVolume, setOutputVolume] = useState(0.7)
+
+  return (
+    <section>
+      <Orb signal={{ state, inputVolume, outputVolume }} theme="circle" interactive={false} />
+      <label>
+        Voice state
+        <select value={state} onChange={(event) => setState(event.target.value as OrbState)}>
+          {states.map((value) => (
+            <option key={value}>{value}</option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Input level
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={inputVolume}
+          onChange={(event) => setInputVolume(Number(event.target.value))}
+        />
+      </label>
+      <label>
+        Output level
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={outputVolume}
+          onChange={(event) => setOutputVolume(Number(event.target.value))}
+        />
+      </label>
+      <p role="status">Preview state: {state}</p>
+    </section>
+  )
+}
+```
+
+This makes theme selection and regression testing faster without opening a microphone or consuming
+provider minutes.
+
+In a Next.js App Router project, add `'use client'` at the top of the file that uses hooks. Other
+React setups can use the example directly.
+
+## Tune the motion and appearance
+
+Start with `balanced`, `calm`, or `expressive`. Change the visual theme without changing how your
+app reports the session state or audio levels:
+
+```tsx
+<Orb
+  signal={{ state: 'speaking', outputVolume: 0.7 }}
+  theme={{ name: 'cloud', preset: 'expressive' }}
+  interactive={false}
+/>
+```
+
+For state-specific colors, configure the circle theme:
+
+```tsx
+<Orb
+  signal={{ state: 'listening', inputVolume: 0.45 }}
+  theme={{
+    name: 'circle',
+    preset: 'calm',
+    appearance: { colors: { listening: '#8b9cff', speaking: '#f4f7ff' } },
+  }}
+  interactive={false}
+/>
+```
+
+The [theme customization reference](/themes/customization) covers colors, size, geometry, and
+response timing. Keep visual tuning in the theme; use the provider adapter to normalize audio.
+
+## Provider-backed orb
+
+Use an adapter when the provider SDK owns the session.
+
+The preview's sliders stand in for a real provider's audio levels. For an ElevenLabs agent, follow
+the [ElevenLabs orb guide](/adapters/elevenlabs) for a complete example with start/end controls and
+session cleanup. Here is the minimal Vapi wiring:
+
+```tsx
+import Vapi from '@vapi-ai/web'
+import { Orb } from 'orb-ui'
+import { createVapiAdapter } from 'orb-ui/adapters'
+
+const vapi = new Vapi('your-public-key')
+const adapter = createVapiAdapter(vapi, {
+  assistantId: 'your-assistant-id',
+})
+
+export function ProviderOrb() {
+  return <Orb adapter={adapter} theme="circle" aria-label="Start voice assistant" />
+}
+```
+
+## Passive orb with separate controls
+
+An orb can subscribe to an adapter without becoming the session control.
+
+```tsx
+export function VoiceSurface() {
+  return (
+    <section aria-label="Voice assistant">
+      <Orb adapter={adapter} theme="cloud" interactive={false} />
+      <button onClick={() => void adapter.start?.()}>Start conversation</button>
+      <button onClick={() => void adapter.stop?.()}>End conversation</button>
+      <p aria-live="polite">Voice assistant controls</p>
+    </section>
+  )
+}
+```
+
+Use this structure when the product already has a call-control bar. The orb remains a status
+visualization, and the labeled buttons continue to make sense with reduced motion or without the
+canvas.
+
+## Custom controlled orb
+
+Use controlled mode when a custom stack supplies a voice signal.
+
+```tsx
+export function CustomOrb({ voiceSignal }) {
+  return <Orb signal={voiceSignal} theme="bars" />
+}
+```
+
+A signal should represent the current snapshot, not just the latest event. Include state and the
+most recent normalized volumes together so the UI cannot display an old speaking level after it
+returns to listening.
+
+## Direction-specific motion
+
+The `radial` theme maps human input to its translucent outer membrane and agent output to the
+twisting field inside the circle. Supply both volume directions through `OrbSignal`; `Orb` selects
+the relevant value for the current state.
+
+```tsx
+<Orb
+  signal={{ state: 'listening', inputVolume: microphoneVolume, outputVolume: agentVolume }}
+  theme="radial"
+/>
+```
+
+If an integration exposes only one meter, map it to `inputVolume` while listening and
+`outputVolume` while speaking. The public signal intentionally has no directionless `volume`
+field, so every theme can distinguish “the app heard you” from “the assistant is responding.”
+
+## Add accessible status copy
+
+Animation should reinforce, not replace, a text description. Put a concise label near the orb and
+announce meaningful lifecycle changes:
+
+```tsx
+const labels = {
+  idle: 'Ready to start',
+  connecting: 'Connecting',
+  listening: 'Listening',
+  thinking: 'Preparing a response',
+  speaking: 'Assistant speaking',
+  error: 'Connection failed',
+}
+
+export function AccessibleVoiceStatus({ signal }) {
+  return (
+    <div>
+      <Orb signal={signal} theme="radial" interactive={false} />
+      <p aria-live="polite">{labels[signal.state]}</p>
+    </div>
+  )
+}
+```
+
+If the orb starts or stops a session, give it an `aria-label`. If separate controls own the session,
+set `interactive={false}` and label those controls instead.
+
+## Test the integration
+
+- Step through idle, connecting, listening, thinking, speaking, and error.
+- Check silence, background noise, normal speech, and high volume.
+- Deny microphone permission and verify that a recovery action appears.
+- Start, stop, and start again to catch leaked provider listeners.
+- Interrupt assistant speech and confirm the UI promptly returns to listening.
+- Test keyboard navigation, reduced motion, and the text status without audio.
+
+## Design notes
+
+- Do not animate aggressively while idle.
+- Make listening and speaking visually distinct.
+- Use thinking for processing gaps when the selected theme benefits from a distinct treatment.
+- Keep error states obvious but not alarming.
+- Pair the orb with a transcript or status label when users need more precision.
+
+Use the [complete voice agent UI guide](/guides/voice-agent-ui) to plan the production lifecycle.
+Then continue with the [themes and voice states reference](/themes/voice-states), choose a provider
+in the [adapter overview](/adapters/overview), or connect an app-owned runtime with the [custom
+integration guide](/adapters/custom).
