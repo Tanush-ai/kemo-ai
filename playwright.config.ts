@@ -15,8 +15,9 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command:
-      'pnpm exec vite --config tests/e2e/fixture/vite.config.ts --host 127.0.0.1 --port 4173',
+    // Why this exists: npx works universally across platforms (including Windows and CI)
+    // without requiring pnpm to be in the global PATH environment variable.
+    command: 'npx vite --config tests/e2e/fixture/vite.config.ts --host 127.0.0.1 --port 4173',
     reuseExistingServer: true,
     timeout: 120_000,
     url: 'http://127.0.0.1:4173',
